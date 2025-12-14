@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Grade 4–5 Math: Multiplication & Division</title>
+<style>
+body{margin:0;font-family:Arial;background:#eef7ff;height:100vh;display:flex;justify-content:center;align-items:center}
+.app{background:#fff;border-radius:20px;padding:20px;width:95%;max-width:560px;text-align:center}
+select,button,input{font-size:1.2em;padding:8px;margin:6px;border-radius:10px}
+.question{font-size:2.4em;margin:20px 0;font-family:monospace}
+.vertical{display:flex;flex-direction:column;align-items:flex-end}
+.hint{color:#555;font-size:1em;margin:10px}
+.score,.timer{font-size:1.2em;margin-top:8px}
+.timer{color:#e53935}
+.stars{font-size:2em;color:gold}
+.dashboard{font-size:0.9em;color:#444;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="app">
+  <h2>✖️➗ Grade 4–5 Math</h2>
+
+  <!-- Grade Selector -->
+  <label>Grade:</label>
+  <select id="grade" onchange="newGame()">
+    <option value="4">4th Grade</option>
+    <option value="5">5th Grade</option>
+  </select>
+
+  <div class="timer" id="timer">⏱️ 45</div>
+
+  <!-- Question Area -->
+  <div class="question vertical" id="question"></div>
+  <div class="hint" id="hint"></div>
+
+  <input type="number" id="answer" autofocus />
+  <br />
+  <button onclick="submitAnswer()">Submit</button>
+
+  <div class="score" id="score"></div>
+  <div class="stars" id="stars"></div>
+  <div class="dashboard" id="dashboard"></div>
+</div>
+
+<audio id="correctSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+<audio id="wrongSound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
+
+<script>
+let grade=4,score=0,qCount=0,correct=0,time=45,timerInt;
+const total=20;
+
+function newGame(){score=0;qCount=0;nextQ();}
+
+function startTimer(){clearInterval(timerInt);time=grade==4?45:40;
+  timerInt=setInterval(()=>{time--;timer.innerText='⏱️ '+time;
+  if(time<=0){clearInterval(timerInt);nextQ();}},1000);
+}
+
+function nextQ(){
+  if(qCount>=total){endGame();return;}
+  qCount++;startTimer();answer.value='';hint.innerText='';
+
+  let op=Math.random()<0.5?'×':'÷';
+  let a,b;
+
+  if(grade==4){
+    a=Math.floor(Math.random()*90)+10; // 2-digit
+    b=Math.floor(Math.random()*9)+2;  // 1-digit
+  }else{
+    a=Math.floor(Math.random()*900)+100; // 3-digit
+    b=Math.floor(Math.random()*90)+10;   // 2-digit
+  }
+
+  if(op==='×'){
+    correct=a*b;
+    hint.innerText='Multiply step by step';
+    question.innerHTML=`<div>${a}</div><div>× ${b}</div><div>────</div>`;
+  }else{
+    correct=a;
+    let dividend=a*b;
+    hint.innerText='Divide evenly';
+    question.innerHTML=`<div>${dividend} ÷ ${b}</div>`;
+  }
+}
+
+function submitAnswer(){
+  let ans=Number(answer.value);
+  if(ans===correct){score++;correctSound.play();}
+  else{wrongSound.play();}
+
+  scoreDiv=score+'/'+total;
+  scoreEl.innerText='Score: '+scoreDiv;
+  stars.innerText='⭐'.repeat(score);
+  saveProgress();nextQ();
+}
+
+function saveProgress(){
+  let data=JSON.parse(localStorage.getItem('md_progress')||'{}');
+  data.grade=grade;data.score=score;data.date=new Date().toLocaleDateString();
+  localStorage.setItem('md_progress',JSON.stringify(data));
+  dashboard.innerText=`Parent View → Grade ${data.grade} | Last Score: ${data.score}`;
+}
+
+function endGame(){clearInterval(timerInt);
+  question.innerText='🎉 Excellent Work!';hint.innerText='';}
+
+// Init
+const scoreEl=document.getElementById('score');
+document.documentElement.requestFullscreen?.();
+newGame();
+</script>
+</body>
+</html>
