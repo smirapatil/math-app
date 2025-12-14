@@ -1,132 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Math Fun for Kids</title>
+<meta charset="UTF-8" />
+<title>Kids Math Pro</title>
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background: #f0f8ff;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-    }
-    .card {
-        background: white;
-        padding: 30px;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        text-align: center;
-        width: 360px;
-    }
-    h1 {
-        font-size: 28px;
-        margin-bottom: 20px;
-    }
-    .column {
-        text-align: right;
-        font-size: 48px;
-        line-height: 1.2;
-        margin-bottom: 10px;
-        font-family: monospace;
-    }
-    .operator {
-        display: inline-block;
-        width: 40px;
-        text-align: right;
-        margin-right: 10px;
-    }
-    input {
-        font-size: 28px;
-        padding: 8px;
-        width: 150px;
-        text-align: center;
-        margin-top: 10px;
-    }
-    button {
-        margin-top: 15px;
-        font-size: 20px;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        background: #4caf50;
-        color: white;
-    }
-    button:hover {
-        background: #45a049;
-    }
-    .result {
-        font-size: 20px;
-        margin-top: 15px;
-    }
-    .stars {
-        font-size: 22px;
-        margin-bottom: 10px;
-        color: #ff9800;
-    }
+body{margin:0;font-family:Arial;background:#eef7ff;height:100vh;display:flex;justify-content:center;align-items:center}
+.app{background:#fff;border-radius:20px;padding:20px;width:95%;max-width:520px;text-align:center}
+select,button,input{font-size:1.2em;padding:8px;margin:5px;border-radius:10px}
+.question{font-size:2.4em;margin:20px 0;line-height:1.2}
+.vertical{display:flex;flex-direction:column;align-items:flex-end;font-family:monospace}
+.hint{color:#666;font-size:1em;margin:10px}
+.score{font-size:1.2em;margin-top:10px}
+.timer{font-size:1.2em;color:#e53935}
+.stars{font-size:2em;color:gold}
+.dashboard{font-size:0.9em;color:#444;margin-top:10px}
 </style>
 </head>
 <body>
-<div class="card">
-    <h1>➕ ➖ Math Fun!</h1>
-    <div class="stars" id="stars">⭐ Stars: 0</div>
-    <div class="column">
-        <div id="num1"></div>
-        <div><span class="operator" id="operator"></span><span id="num2"></span></div>
-        <div>────────</div>
-    </div>
-    <input type="number" id="answer" placeholder="Enter answer" />
-    <br>
-    <button onclick="checkAnswer()">Check Answer</button>
-    <div class="result" id="result"></div>
+<div class="app">
+  <h2>🧮 Kids Math Pro</h2>
+
+  <!-- Grade Selector -->
+  <label>Grade:</label>
+  <select id="grade" onchange="setGrade()">
+    <option value="1">1st Grade</option>
+    <option value="2">2nd Grade</option>
+    <option value="3">3rd Grade</option>
+  </select>
+
+  <div class="timer" id="timer">⏱️ 30</div>
+
+  <!-- Vertical Question -->
+  <div class="question vertical" id="question"></div>
+
+  <div class="hint" id="hint"></div>
+
+  <input type="number" id="answer" autofocus />
+  <br />
+  <button onclick="submitAnswer()">Submit</button>
+
+  <div class="score" id="score"></div>
+  <div class="stars" id="stars"></div>
+  <div class="dashboard" id="dashboard"></div>
 </div>
 
+<audio id="correctSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+<audio id="wrongSound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
+
 <script>
-let num1, num2, operator, correctAnswer;
-let stars = 0;
+let grade=1,score=0,qCount=0,correct=0,time=30,timerInt;
+const total=20;
 
-function generateQuestion() {
-    num1 = Math.floor(Math.random() * 90) + 10; // 10-99
-    num2 = Math.floor(Math.random() * 90) + 10;
-    operator = Math.random() > 0.5 ? '+' : '-';
+function setGrade(){grade=document.getElementById('grade').value;newGame();}
 
-    if (operator === '-' && num2 > num1) {
-        [num1, num2] = [num2, num1];
-    }
+function newGame(){score=0;qCount=0;startTimer();nextQ();}
 
-    correctAnswer = operator === '+' ? num1 + num2 : num1 - num2;
-
-    document.getElementById('num1').textContent = num1;
-    document.getElementById('operator').textContent = operator;
-    document.getElementById('num2').textContent = num2;
-    document.getElementById('answer').value = '';
-    document.getElementById('result').textContent = '';
+function startTimer(){clearInterval(timerInt);time=30;
+  timerInt=setInterval(()=>{time--;document.getElementById('timer').innerText='⏱️ '+time;
+  if(time<=0){clearInterval(timerInt);nextQ();}},1000);
 }
 
-function checkAnswer() {
-    const userAnswer = Number(document.getElementById('answer').value);
-    const result = document.getElementById('result');
-
-    if (userAnswer === correctAnswer) {
-        stars += 1;
-        document.getElementById('stars').textContent = `⭐ Stars: ${stars}`;
-        result.textContent = '🎉 Correct!';
-        result.style.color = 'green';
-        setTimeout(generateQuestion, 1200);
-    } else {
-        result.textContent = '❌ Try again!';
-        result.style.color = 'red';
-    }
+function nextQ(){
+  if(qCount>=total){endGame();return;}
+  qCount++;startTimer();document.getElementById('answer').value='';
+  let max=grade==1?20:grade==2?50:99;
+  let a=Math.floor(Math.random()*max)+1;
+  let b=Math.floor(Math.random()*max)+1;
+  let op=['+','-'][Math.floor(Math.random()*2)];
+  if(op==='-'){a=Math.max(a,b);b=Math.min(a,b);correct=a-b;
+    document.getElementById('hint').innerText=(a%10<b%10)?'Borrow from tens ➜':'';
+  }else{correct=a+b;document.getElementById('hint').innerText=((a%10+b%10)>=10)?'Carry to tens ➜':'';}
+  document.getElementById('question').innerHTML=`<div>${a}</div><div>${op} ${b}</div><div>────</div>`;
 }
 
-// Full screen on load
-document.body.requestFullscreen?.();
+function submitAnswer(){let ans=Number(answer.value);
+  if(ans===correct){score++;correctSound.play();}else{wrongSound.play();}
+  document.getElementById('score').innerText=`Score: ${score}/${total}`;
+  document.getElementById('stars').innerText='⭐'.repeat(score);
+  saveProgress();nextQ();}
 
-generateQuestion();
+function saveProgress(){
+  let data=JSON.parse(localStorage.getItem('progress')||'{}');
+  data.date=new Date().toLocaleDateString();
+  data.score=score;localStorage.setItem('progress',JSON.stringify(data));
+  document.getElementById('dashboard').innerText=`Parent View → Last Score: ${data.score}`;
+}
+
+function endGame(){clearInterval(timerInt);
+  question.innerText='🎉 Great Job!';hint.innerText='';}
+
+document.documentElement.requestFullscreen?.();
+newGame();
 </script>
 </body>
 </html>
