@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Math Fun for Kids</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f0f8ff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+    .card {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        text-align: center;
+        width: 360px;
+    }
+    h1 {
+        font-size: 28px;
+        margin-bottom: 20px;
+    }
+    .column {
+        text-align: right;
+        font-size: 48px;
+        line-height: 1.2;
+        margin-bottom: 10px;
+        font-family: monospace;
+    }
+    .operator {
+        display: inline-block;
+        width: 40px;
+        text-align: right;
+        margin-right: 10px;
+    }
+    input {
+        font-size: 28px;
+        padding: 8px;
+        width: 150px;
+        text-align: center;
+        margin-top: 10px;
+    }
+    button {
+        margin-top: 15px;
+        font-size: 20px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        background: #4caf50;
+        color: white;
+    }
+    button:hover {
+        background: #45a049;
+    }
+    .result {
+        font-size: 20px;
+        margin-top: 15px;
+    }
+    .stars {
+        font-size: 22px;
+        margin-bottom: 10px;
+        color: #ff9800;
+    }
+</style>
+</head>
+<body>
+<div class="card">
+    <h1>➕ ➖ Math Fun!</h1>
+    <div class="stars" id="stars">⭐ Stars: 0</div>
+    <div class="column">
+        <div id="num1"></div>
+        <div><span class="operator" id="operator"></span><span id="num2"></span></div>
+        <div>────────</div>
+    </div>
+    <input type="number" id="answer" placeholder="Enter answer" />
+    <br>
+    <button onclick="checkAnswer()">Check Answer</button>
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+let num1, num2, operator, correctAnswer;
+let stars = 0;
+
+function generateQuestion() {
+    num1 = Math.floor(Math.random() * 90) + 10; // 10-99
+    num2 = Math.floor(Math.random() * 90) + 10;
+    operator = Math.random() > 0.5 ? '+' : '-';
+
+    if (operator === '-' && num2 > num1) {
+        [num1, num2] = [num2, num1];
+    }
+
+    correctAnswer = operator === '+' ? num1 + num2 : num1 - num2;
+
+    document.getElementById('num1').textContent = num1;
+    document.getElementById('operator').textContent = operator;
+    document.getElementById('num2').textContent = num2;
+    document.getElementById('answer').value = '';
+    document.getElementById('result').textContent = '';
+}
+
+function checkAnswer() {
+    const userAnswer = Number(document.getElementById('answer').value);
+    const result = document.getElementById('result');
+
+    if (userAnswer === correctAnswer) {
+        stars += 1;
+        document.getElementById('stars').textContent = `⭐ Stars: ${stars}`;
+        result.textContent = '🎉 Correct!';
+        result.style.color = 'green';
+        setTimeout(generateQuestion, 1200);
+    } else {
+        result.textContent = '❌ Try again!';
+        result.style.color = 'red';
+    }
+}
+
+// Full screen on load
+document.body.requestFullscreen?.();
+
+generateQuestion();
+</script>
+</body>
+</html>
