@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Math Fun – Multiply & Divide</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f0f8ff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  .card {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    text-align: center;
+    width: 380px;
+  }
+  h1 {
+    font-size: 28px;
+    margin-bottom: 15px;
+  }
+  .stars {
+    font-size: 22px;
+    color: #ff9800;
+    margin-bottom: 15px;
+  }
+  .problem {
+    font-family: monospace;
+    font-size: 42px;
+    margin-bottom: 15px;
+  }
+  input {
+    font-size: 28px;
+    padding: 8px;
+    width: 180px;
+    text-align: center;
+  }
+  button {
+    margin-top: 15px;
+    font-size: 20px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #4caf50;
+    color: white;
+  }
+  button:hover {
+    background: #45a049;
+  }
+  .result {
+    font-size: 20px;
+    margin-top: 15px;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>✖️ ➗ Math Fun!</h1>
+  <div class="stars" id="stars">⭐ Stars: 0</div>
+  <div class="problem" id="problem"></div>
+  <input type="number" id="answer" placeholder="Answer">
+  <br>
+  <button onclick="checkAnswer()">Check Answer</button>
+  <div class="result" id="result"></div>
+</div>
+
+<script>
+let num1, num2, operator, correctAnswer;
+let stars = 0;
+
+function generateQuestion() {
+  operator = Math.random() > 0.5 ? '×' : '÷';
+
+  if (operator === '×') {
+    num1 = Math.floor(Math.random() * 90) + 10; // 10–99
+    num2 = Math.floor(Math.random() * 9) + 2;   // keep results reasonable
+    correctAnswer = num1 * num2;
+  } else {
+    num2 = Math.floor(Math.random() * 9) + 2;
+    correctAnswer = Math.floor(Math.random() * 90) + 10;
+    num1 = num2 * correctAnswer; // ensures whole number division
+  }
+
+  document.getElementById('problem').textContent = `${num1} ${operator} ${num2} = ?`;
+  document.getElementById('answer').value = '';
+  document.getElementById('result').textContent = '';
+}
+
+function checkAnswer() {
+  const userAnswer = Number(document.getElementById('answer').value);
+  const result = document.getElementById('result');
+
+  if (userAnswer === correctAnswer) {
+    stars++;
+    document.getElementById('stars').textContent = `⭐ Stars: ${stars}`;
+    result.textContent = '🎉 Correct!';
+    result.style.color = 'green';
+    setTimeout(generateQuestion, 1200);
+  } else {
+    result.textContent = '❌ Try again!';
+    result.style.color = 'red';
+  }
+}
+
+// Auto fullscreen (if allowed)
+document.body.requestFullscreen?.();
+
+generateQuestion();
+</script>
+</body>
+</html>
