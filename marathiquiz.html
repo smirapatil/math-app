@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marathi Word Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6fb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .card {
+      background: white;
+      padding: 24px;
+      border-radius: 16px;
+      width: 320px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    h1 {
+      font-size: 22px;
+      margin-bottom: 12px;
+    }
+    .word {
+      font-size: 28px;
+      margin: 20px 0;
+      font-weight: bold;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      margin: 6px 0;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    .correct { background: #4caf50; color: white; }
+    .wrong { background: #f44336; color: white; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Marathi → English</h1>
+    <div class="word" id="marathiWord"></div>
+    <div id="options"></div>
+  </div>
+
+  <script>
+    const words = [
+      { marathi: "आई", correct: "Mother", options: ["Mother", "Father", "Sister", "Teacher"] },
+      { marathi: "पाणी", correct: "Water", options: ["Milk", "Water", "Juice", "Tea"] },
+      { marathi: "शाळा", correct: "School", options: ["Hospital", "Market", "School", "Home"] },
+      { marathi: "फूल", correct: "Flower", options: ["Fruit", "Tree", "Flower", "Leaf"] },
+      { marathi: "मांजर", correct: "Cat", options: ["Dog", "Cow", "Cat", "Horse"] }
+    ];
+
+    let current = 0;
+
+    function loadQuestion() {
+      const q = words[current];
+      document.getElementById("marathiWord").innerText = q.marathi;
+      const optionsDiv = document.getElementById("options");
+      optionsDiv.innerHTML = "";
+
+      q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.innerText = opt;
+        btn.onclick = () => checkAnswer(btn, opt === q.correct);
+        optionsDiv.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(button, isCorrect) {
+      button.className = isCorrect ? "correct" : "wrong";
+      setTimeout(() => {
+        current = (current + 1) % words.length;
+        loadQuestion();
+      }, 800);
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
