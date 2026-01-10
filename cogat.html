@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CogAT Practice App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    h1 { color: #333; }
+    .question-box {
+      background: #fff;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 10px;
+      box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+      width: 90%;
+      max-width: 600px;
+    }
+    .options button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      cursor: pointer;
+      background: #e0e0e0;
+      transition: background 0.3s;
+    }
+    .options button:hover { background: #d0d0d0; }
+    .scoreboard {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    .dashboard-btn {
+      margin-top: 20px;
+      padding: 10px 15px;
+      font-size: 14px;
+      cursor: pointer;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    .dashboard-btn:hover { background: #45a049; }
+  </style>
+</head>
+<body>
+
+<h1>CogAT Practice App</h1>
+
+<div class="question-box">
+  <div id="question-text">Question will appear here</div>
+  <div class="options" id="options-container"></div>
+  <div class="scoreboard" id="scoreboard">Score: 0 | Streak: 0 | Questions Remaining: 0</div>
+</div>
+
+<button class="dashboard-btn" onclick="showDashboard()">Parent Dashboard</button>
+
+<script>
+  // ----------------- QUESTIONS -----------------
+  const levelUpPack = [
+    ["What comes next? 1, 2, 3, ?", ["4", "5", "6", "7"], "4"],
+    ["Which is bigger?", ["Cat", "Dog", "Mouse", "Elephant"], "Elephant"],
+    ["Find the odd one out", ["Red", "Blue", "Circle", "Green"], "Circle"],
+    ["Which has wheels?", ["Car", "Bird", "Dog", "Fish"], "Car"],
+    ["Sun rises in the ___?", ["East", "West", "North", "South"], "East"],
+    ["Which can fly?", ["Bird", "Cat", "Dog", "Cow"], "Bird"],
+    ["Find the missing number: 2, 4, 6, ?", ["7", "8", "10", "12"], "8"],
+    ["Which is tallest?", ["Apple tree", "Rose", "Sunflower", "Grass"], "Apple tree"],
+    ["Which is smallest?", ["Ant", "Elephant", "Cat", "Dog"], "Ant"],
+    ["Circle : Sphere :: Square : ?", ["Cube", "Rectangle", "Triangle", "Cylinder"], "Cube"],
+    ["Which is a fruit?", ["Apple", "Carrot", "Potato", "Cucumber"], "Apple"],
+    ["Dog : Bark :: Cat : ?", ["Meow", "Roar", "Chirp", "Whistle"], "Meow"],
+    ["Complete the pattern: ▲ ▼ ▲ ▼ ?", ["▲", "▼", "◆", "■"], "▲"],
+    ["Which is alive?", ["Rock", "Tree", "Car", "Book"], "Tree"],
+    ["Find the odd one: 1, 2, 3, 5, 4", ["3", "5", "4", "1"], "5"],
+    // ... Add all 300+ questions here ...
+  ];
+
+  let remainingQuestions = [...levelUpPack];
+  let currentQuestion = null;
+  let score = 0;
+  let streak = 0;
+
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
+
+  function loadQuestion() {
+    if (remainingQuestions.length === 0) {
+      alert(`Congratulations! You have completed all questions.\nFinal Score: ${score}`);
+      return;
+    }
+
+    // Pick random question
+    const idx = Math.floor(Math.random() * remainingQuestions.length);
+    currentQuestion = remainingQuestions.splice(idx, 1)[0];
+
+    document.getElementById("question-text").innerText = currentQuestion[0];
+    const optionsContainer = document.getElementById("options-container");
+    optionsContainer.innerHTML = "";
+
+    shuffleArray(currentQuestion[1]); // Shuffle options
+
+    currentQuestion[1].forEach(option => {
+      const btn = document.createElement("button");
+      btn.innerText = option;
+      btn.onclick = () => checkAnswer(option);
+      optionsContainer.appendChild(btn);
+    });
+
+    updateScoreboard();
+  }
+
+  function checkAnswer(selected) {
+    if (selected === currentQuestion[2]) {
+      score++;
+      streak++;
+      alert("Correct! ⭐");
+    } else {
+      streak = 0;
+      alert(`Wrong! Correct answer: ${currentQuestion[2]}`);
+    }
+    loadQuestion();
+  }
+
+  function updateScoreboard() {
+    document.getElementById("scoreboard").innerText =
+      `Score: ${score} | Streak: ${streak} | Questions Remaining: ${remainingQuestions.length}`;
+  }
+
+  function showDashboard() {
+    alert(`Parent Dashboard:
+Total Questions Attempted: ${levelUpPack.length - remainingQuestions.length}
+Score: ${score}
+Questions Remaining: ${remainingQuestions.length}`);
+  }
+
+  // Initialize first question
+  loadQuestion();
+</script>
+
+</body>
+</html>
