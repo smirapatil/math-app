@@ -67,7 +67,7 @@
 
 <script>
   // ----------------- QUESTIONS -----------------
-  const levelUpPack = [
+  const questions = [
 ["What comes next? 1, 2, 3, ?", ["4", "5", "6", "7"], "4"],
 ["Which is biggest?", ["Cat", "Elephant", "Mouse", "Dog"], "Elephant"],
 ["Find the odd one", ["Circle", "Square", "Apple", "Triangle"], "Apple"],
@@ -169,7 +169,7 @@
 ]
 
 
-  let remainingQuestions = [...levelUpPack];
+  let remainingQuestions = [...questions];
   let currentQuestion = null;
   let score = 0;
   let streak = 0;
@@ -226,7 +226,7 @@
 
   function showDashboard() {
     alert(`Parent Dashboard:
-Total Questions Attempted: ${levelUpPack.length - remainingQuestions.length}
+Total Questions Attempted: ${questions.length - remainingQuestions.length}
 Score: ${score}
 Questions Remaining: ${remainingQuestions.length}`);
   }
